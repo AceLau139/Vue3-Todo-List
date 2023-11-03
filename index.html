@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue To-do List</title>
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Vue 3.0 CDN -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/vue-router@4"></script>
+</head>
+
+<body>
+    <div class="containerAAA">
+        <!-- Small A -->
+        <button class="smallFS" aria-label="Small size">
+            <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.06805 11.3361H10.54L6.23605 0.664062H4.58805L0.300049 11.3361H1.77205L2.71605 8.96806H8.12405L9.06805 11.3361ZM5.42005 1.84806L7.72405 7.78406H3.10005L5.42005 1.84806Z" fill="#8f8f8f"/>
+            </svg>
+        </button>
+
+        <!-- Medium A -->
+        <button class="middleFS" aria-label="Medium size">
+            <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.296 13.0031H12.6L7.88404 0.99707H5.25604L0.540039 13.0031H2.84404L3.72604 10.6991H9.41404L10.296 13.0031ZM6.57004 2.77907L8.82004 8.84507H4.32004L6.57004 2.77907Z" fill="#8f8f8f"/>
+            </svg>
+        </button>
+
+        <!-- Large A -->
+        <button class="largeFS" aria-label="Large size">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.4401 13.6701H14.0001L8.7601 0.330078H5.8401L0.600098 13.6701H3.1601L4.1401 11.1101H10.4601L11.4401 13.6701ZM7.3001 2.31008L9.8001 9.05008H4.8001L7.3001 2.31008Z" fill="#8f8f8f"/>
+            </svg>
+        </button>
+    </div>
+    
+    <!-- To-do List -->
+    <div id="app" class="container">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div id="basic-addon1" class="input-group-text">待辦事項</div>
+            </div>
+
+            <input class="form-control" type="text" placeholder="準備要做的任務" v-model="newTodo" @keyup.enter="addTodo" />
+          
+            <div class="input-group-append">
+                <button class="btn" type="button" @click="addTodo">新增</button>
+            </div>
+        </div>
+
+        <div class="card text-center">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <template v-for="(item, index) in visibilityList">
+                        <li class="nav-item" :key="index">
+                            <a class="nav-link" href="#" :class="{ 'active' : visibility == item.value }" @click="visibility=item.value">{{item.name}}</a>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+            <ul class="list-group list-group-flush text-left">
+                <template v-for="(item) in filteredTodos">
+                    <li class="list-group-item" :key="item.id" @dblclick="editTodo(item)">
+                        <div class="d-flex justify-content-between" v-if="item.id !== cacheTodo.id">
+                            <div class="form-check">
+                                <input class="form-check-input" :id="item.id" type="checkbox" @click="changeComplated(item.id)" v-model="item.completed" />
+                                <label class="form-check-label" :for="item.id" :class="{'completed':item.completed}">{{item.title}}</label>
+                            </div>
+
+                            <button class="close ml-auto" type="button" aria-label="Close" @click="removeTodo(item)">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+
+                        <input class="form-control" type="text" v-model="cacheTitle" v-if="item.id == cacheTodo.id" @keyup.esc="cancelEdit" @keyup.enter="doneEdit(item)" @blur="doneEdit(item)" />
+                    </li>
+                </template>
+            </ul>
+
+            <div class="card-footer d-flex justify-content-between">
+                <div>
+                    還有<span class="remainMission">{{`${activeTodosLength}`}}</span>筆任務未完成
+                </div>
+                <a href="#" @click="cleanTodo">清除所有任務</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script src="script.js"></script>
+<script>
+    const urlAPI = `https://eudora-hsj.github.io/Vue-practice/data/todolist.json`;
+
+    const vm = Vue.createApp({
+        data() {
+            return {
+                newTodo: '',
+                apiData: [], // Save API data
+                todos: [], // Save LocalStorage data
+                visibilityList: [
+                    { name: '全部', value: 'all' },
+                    { name: '進行中', value: 'active' },
+                    { name: '已完成', value: 'completed' }
+                ],
+                visibility: 'all',
+                cacheTodo: {},
+                cacheTitle: ''
+            };
+        },
+        created() {
+            this.loadLocalStorage(); // Load data from LocalStorage
+            this.getList(urlAPI); // Fetch API data
+        },
+        methods: {
+            // API data
+            getList(urlAPI) {
+                fetch(urlAPI, {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        }
+                        throw new Error('Error fetching current weather data');
+                    })
+                    .then(data => {
+                        this.apiData = data.data;
+                        this.saveToLocalStorage(); // Save fetched data to LocalStorage
+                    })
+                    .catch(error => {
+                        console.error(error); // Log any error messages
+                    });
+            },
+            // Add new to-do
+            addTodo() {
+                let newTodoStr = this.newTodo.trim();
+                if (!newTodoStr) {
+                    return;
+                }
+                this.newTodo = '';
+                let submitData = {
+                    id: Math.floor(Date.now()),
+                    title: newTodoStr,
+                    completed: false
+                };
+                this.todos.push(submitData);
+                this.saveToLocalStorage();
+            },
+            // Remove to-do
+            removeTodo(item) {
+                this.todos.splice(this.getIndex(item.id), 1);
+                this.saveToLocalStorage();
+            },
+            // Edit to-do
+            editTodo(item) {
+                this.cacheTodo = item;
+                this.cacheTitle = item.title;
+            },
+            // Esc - Cancel edit
+            cancelEdit() {
+                this.cacheTodo = {};
+            },
+            // Enter - Submit edit
+            doneEdit(item) {
+                item.title = this.cacheTitle;
+                this.cacheTitle = '';
+                this.cacheTodo = {};
+                this.saveToLocalStorage();
+            },
+            // Clean all to-do
+            cleanTodo() {
+                this.todos.splice(0, this.todos.length);
+                this.saveToLocalStorage();
+            },
+            getIndex(id) {
+                return this.todos.findIndex(el => el.id == id);
+            },
+            changeComplated(id) {
+                let index = this.getIndex(id);
+                this.todos[index].completed = !this.todos[index].completed;
+                this.saveToLocalStorage();
+            },
+            // Waiting for LocalStorage
+            saveToLocalStorage() {
+                localStorage.setItem('todos', JSON.stringify(this.todos));
+            },
+            loadLocalStorage() {
+                const savedTodos = localStorage.getItem('todos');
+                console.log(savedTodos)
+                if (savedTodos) {
+                    this.todos = JSON.parse(savedTodos);
+                }
+            }
+        },
+        computed: {
+            // Change the tab
+            filteredTodos() {
+                let nowTab = this.visibility;
+                switch (nowTab) {
+                    case 'all':
+                        return this.todos.filter(item => true);
+                    case 'active':
+                        return this.todos.filter(item => !item.completed);
+                    case 'completed':
+                        return this.todos.filter(item => item.completed);
+                }
+            },
+            getNewKey() {
+                return Math.max(...this.todos.map(el => +el.id));
+            },
+            activeTodosLength() {
+                return this.todos.filter(item => !item.completed).length;
+            }
+        },
+        components: {}
+    }).mount('#app');
+</script>
