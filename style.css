@@ -33,7 +33,7 @@ button, input{
 	text-decoration: line-through;
 }
 .completed ~ .editSVG svg{
-    fill: #7b7b7b;
+    fill: #7b7b7b !important;
 }
 
 .container{
@@ -97,8 +97,8 @@ button, input{
 }
 
 /* Green theme */
-.greenTheme a, .greenTheme .input-group-text{
-    color: #13BA59;
+.greenTheme a, .greenTheme .input-group-text, .greenTheme .remainMission{
+    color: #39ad33;
 }
 .greenTheme .headerWrapper{
     background-color: #c9ffcd;
@@ -112,13 +112,16 @@ button, input{
     background-color: #39ad33;
     border-color: #39ad33;
 }
-input[type="checkbox"]:checked{
+.greenTheme input[type="checkbox"]:checked{
     accent-color: #0a9800 !important;
+}
+.greenTheme .editSVG svg{
+    fill: #2e8a2a;
 }
 
 
 /* Orange theme */
-.orangeTheme a, .orangeTheme .input-group-text{
+.orangeTheme a, .orangeTheme .input-group-text, .orangeTheme .remainMission{
     color: #FF9100;
 }
 .orangeTheme .headerWrapper{
@@ -136,9 +139,12 @@ input[type="checkbox"]:checked{
 .orangeTheme input[type="checkbox"]:checked{
     accent-color: #d67900 !important;
 }
+.orangeTheme .editSVG svg{
+    fill: #FF9100;
+}
 
 /* Blue theme */
-.blueTheme a, .blueTheme .input-group-text{
+.blueTheme a, .blueTheme .input-group-text, .blueTheme .remainMission{
     color: #007bff;
 }
 .blueTheme .headerWrapper{
@@ -155,6 +161,9 @@ input[type="checkbox"]:checked{
 }
 .blueTheme input[type="checkbox"]:checked{
     accent-color: #007bff !important;
+}
+.blueTheme .editSVG svg{
+    fill: #007bff;
 }
 
 /* AAA font size */
