@@ -38,7 +38,7 @@ const vm = Vue.createApp({
                     this.saveToLocalStorage(); // Save fetched data to LocalStorage
                 })
                 .catch(error => {
-                    console.error(error); // Log any error messages
+                    console.error(error);
                 });
         },
         // Add new to-do
@@ -76,6 +76,12 @@ const vm = Vue.createApp({
             this.cacheTitle = '';
             this.cacheTodo = {};
             this.saveToLocalStorage();
+        },
+        // Confirm clean all to-do
+        confirmCleanAll(event){            
+            if (confirm('確定要清除所有任務嗎？')) {
+                this.cleanTodo(); // Call the cleanTodo function to clear all tasks
+            }
         },
         // Clean all to-do
         cleanTodo() {

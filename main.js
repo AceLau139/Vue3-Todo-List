@@ -1,13 +1,83 @@
+const body = document.querySelector('body');
+
+// ===== Themes ===== */
+const greenThemeBtn = document.querySelector('.greenThemeBtn')
+const orangeThemeBtn = document.querySelector('.orangeThemeBtn')
+const blueThemeBtn = document.querySelector('.blueThemeBtn')
+const theme = localStorage.getItem('theme');
+if (theme){
+    document.body.classList.add(theme)
+}
+else{
+    document.body.classList.add('blueTheme');
+    blueThemeBtn.classList.add('activeThemeBtn');
+}
+
+function changeTheme(newTheme){
+    // Remove existing theme class from body
+    document.body.classList.remove('greenTheme', 'orangeTheme', 'blueTheme');
+
+    // Add new theme class to body
+    document.body.classList.add(newTheme);
+
+    // Save new theme to localStorage
+    localStorage.setItem('theme', newTheme);
+
+    // Remove activeTheme class from all theme buttons
+    greenThemeBtn.classList.remove('activeThemeBtn');
+    orangeThemeBtn.classList.remove('activeThemeBtn');
+    blueThemeBtn.classList.remove('activeThemeBtn');
+
+    // Add activeTheme class to the clicked theme button
+    if (newTheme === 'greenTheme') {
+        greenThemeBtn.classList.add('activeThemeBtn');
+    } 
+    else if (newTheme === 'orangeTheme') {
+        orangeThemeBtn.classList.add('activeThemeBtn');
+    } 
+    else if (newTheme === 'blueTheme') {
+        blueThemeBtn.classList.add('activeThemeBtn');
+    }
+}
+
+// Add activeTheme class to the clicked theme button
+if (theme === 'greenTheme') {
+    greenThemeBtn.classList.add('activeThemeBtn');
+} 
+else if (theme === 'orangeTheme') {
+    orangeThemeBtn.classList.add('activeThemeBtn');
+} 
+else if (theme === 'blueTheme') {
+    blueThemeBtn.classList.add('activeThemeBtn');
+}
+
+// Event listeners for theme buttons
+greenThemeBtn.addEventListener('click', function() {
+    changeTheme('greenTheme');
+});
+  
+orangeThemeBtn.addEventListener('click', function() {
+    changeTheme('orangeTheme');
+});
+  
+blueThemeBtn.addEventListener('click', function() {
+    changeTheme('blueTheme');
+});
+
 // ===== Font size option ===== //
 // Font Size - LocalStorage
 const smallFSList = document.querySelectorAll('.smallFS')
 const middleFSList = document.querySelectorAll('.middleFS')
 const largeFSList = document.querySelectorAll('.largeFS')
 const fontSize = localStorage.getItem('fontSize');
+if (fontSize) {
+    changeFontSize(fontSize);
+}
+else{
+    changeFontSize('small');
+}
 
 function changeFontSize(size) {
-    const body = document.querySelector('body');
-
     switch (size) {
         case 'small':
             body.style.fontSize = '16px';
@@ -57,9 +127,6 @@ function changeFontSize(size) {
         default:
             break;
     }
-}
-if (fontSize) {
-    changeFontSize(fontSize);
 }
 
 // small size - 16px
