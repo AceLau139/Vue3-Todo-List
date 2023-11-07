@@ -12,7 +12,7 @@ a{
 li{
     display: block;
 }
-button{
+button, input{
     cursor: pointer;
 }
 .hidden{
@@ -24,16 +24,19 @@ button{
 .justify-content-between{
     justify-content: space-between;
 }
-.text-center {
+.text-center{
     text-align: center;
 }
 
-.completed {
+.completed{
     color: #8f8f8f;
 	text-decoration: line-through;
 }
+.completed ~ .editSVG svg{
+    fill: #8f8f8f;
+}
 
-.container {
+.container{
     padding: 1rem;
     margin: 0 auto;
 }
@@ -200,12 +203,24 @@ button{
 }
 
 .form-check{
+    width: 100%;
     display: flex;
-    gap: 4px;
+    gap: 8px;
+}
+.form-check:hover .editSVG{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .form-check-label{
     display: flex;
     align-items: center;
+}
+
+/* editing SVG icon */
+.editSVG{
+    display: none;
+    cursor: pointer;
 }
 
 /* X button */
